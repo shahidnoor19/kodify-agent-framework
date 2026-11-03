@@ -6,7 +6,9 @@ var demo = args.FirstOrDefault() ?? "03";
 Func<Task> run = demo switch
 {
     "03" => FirstAgent.RunAsync,
+    "04" => Streaming.RunAsync,
     "05" => ChatClients.RunAsync,
+    "06" => StructuredOutput.RunAsync,
     _ => () => { Console.WriteLine("Demos: 03 first agent, 05 chat clients"); return Task.CompletedTask; }
     ,
 };

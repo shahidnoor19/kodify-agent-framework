@@ -2,6 +2,28 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Streaming (04)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/AgentBasics/bin/Debug/net10.0/AgentBasics.dll",
+            "args": [
+                "04"
+            ],
+            "cwd": "${workspaceFolder}/src/AgentBasics",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Structured output (06)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/AgentBasics/bin/Debug/net10.0/AgentBasics.dll",
+            "args": [
+                "06"
+            ],
+            "cwd": "${workspaceFolder}/src/AgentBasics",
+            "console": "internalConsole"
+        },
+        {
             "name": "First agent (03)",
             "type": "coreclr",
             "request": "launch",
