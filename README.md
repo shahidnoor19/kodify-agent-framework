@@ -14,3 +14,4 @@ A production-grade AI Support Copilot, built step by step in the Kodify Dev YouT
 ## Episodes
 
 1. Intro, live demo and architecture
+2. Setup: .NET 10, VS Code Insiders, Microsoft Foundry
