@@ -1,6 +1,8 @@
 {
     "version": "0.2.0",
     "configurations": [
+        { "name": "Test: agent returns the answer", "type": "coreclr", "request": "launch", "program": "${workspaceFolder}/tests/AgentBasics.Tests/bin/Debug/net10.0/AgentBasics.Tests.dll", "args": ["-method", "AgentBasics.Tests.AgentTests.Agent_returns_the_model_answer"], "cwd": "${workspaceFolder}/tests/AgentBasics.Tests", "console": "internalConsole" },
+        { "name": "Test: session replays history", "type": "coreclr", "request": "launch", "program": "${workspaceFolder}/tests/AgentBasics.Tests/bin/Debug/net10.0/AgentBasics.Tests.dll", "args": ["-method", "AgentBasics.Tests.AgentTests.Session_sends_earlier_turns_to_the_model"], "cwd": "${workspaceFolder}/tests/AgentBasics.Tests", "console": "internalConsole" },
         {
             "name": "Models (07)",
             "type": "coreclr",
