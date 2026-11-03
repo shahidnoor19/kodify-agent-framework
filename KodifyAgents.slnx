@@ -1,2 +1,5 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AgentBasics/AgentBasics.csproj" />
+  </Folder>
 </Solution>

@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "First agent (03)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/AgentBasics/bin/Debug/net10.0/AgentBasics.dll",
+            "cwd": "${workspaceFolder}/src/AgentBasics",
+            "console": "internalConsole"
+        },
+        {
+            "name": "Layers (05)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/AgentBasics/bin/Debug/net10.0/AgentBasics.dll",
+            "args": [
+                "05"
+            ],
+            "cwd": "${workspaceFolder}/src/AgentBasics",
+            "console": "internalConsole"
+        }
+    ]
+}
