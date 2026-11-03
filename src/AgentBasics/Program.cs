@@ -9,6 +9,7 @@ Func<Task> run = demo switch
     "04" => Streaming.RunAsync,
     "05" => ChatClients.RunAsync,
     "06" => StructuredOutput.RunAsync,
+    "07" => ModelsAndCost.RunAsync,
     _ => () => { Console.WriteLine("Demos: 03 first agent, 05 chat clients"); return Task.CompletedTask; }
     ,
 };
