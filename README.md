@@ -1,3 +1,4 @@
+8. Agents in DI, with resilience
 # Kodify Agent Framework
 
 A production-grade AI Support Copilot, built step by step in the Kodify Dev YouTube course

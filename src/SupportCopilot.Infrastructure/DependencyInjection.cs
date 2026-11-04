@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SupportCopilot.Application;
 using SupportCopilot.Infrastructure.Data;
+using SupportCopilot.Infrastructure.Foundry;
 using SupportCopilot.Infrastructure.Options;
 
 namespace SupportCopilot.Infrastructure;
@@ -32,6 +33,8 @@ public static class DependencyInjection
             o.UseSqlite(configuration.GetConnectionString("Default") ?? $"Data Source={Path.Combine(dataRoot, "supportcopilot.db")}");
         });
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+        // One Foundry client for the whole app: retries, a timeout and the model tiers.
+        services.AddSingleton<FoundryClients>();
 
         return services;
     }

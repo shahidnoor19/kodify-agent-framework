@@ -1,4 +1,5 @@
 using SupportCopilot.Infrastructure;
+using SupportCopilot.Agents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,8 @@ builder.AddServiceDefaults();
 
 // The layers: Application (rules) → Infrastructure (EF Core, Foundry) → Web.
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.ContentRootPath);
+// The agents: keyed AIAgent singletons that share the one Foundry client.
+builder.AddSupportAgents();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
