@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\SupportCopilot.Infrastructure\SupportCopilot.Infrastructure.csproj" />
+    <ProjectReference Include="..\SupportCopilot.ServiceDefaults\SupportCopilot.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>

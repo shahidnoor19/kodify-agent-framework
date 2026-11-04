@@ -1,6 +1,12 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/AgentBasics/AgentBasics.csproj" />
+    <Project Path="src/SupportCopilot.AppHost/SupportCopilot.AppHost.csproj" />
+    <Project Path="src/SupportCopilot.Application/SupportCopilot.Application.csproj" />
+    <Project Path="src/SupportCopilot.Domain/SupportCopilot.Domain.csproj" />
+    <Project Path="src/SupportCopilot.Infrastructure/SupportCopilot.Infrastructure.csproj" />
+    <Project Path="src/SupportCopilot.ServiceDefaults/SupportCopilot.ServiceDefaults.csproj" />
+    <Project Path="src/SupportCopilot.Web/SupportCopilot.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AgentBasics.Tests/AgentBasics.Tests.csproj" />

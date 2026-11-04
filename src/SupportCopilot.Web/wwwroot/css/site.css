@@ -1,0 +1,103 @@
+/* Kodify theme: the same look as the course slides (dark, mint + violet accents, glass panels). */
+:root {
+    --k-bg: #0e0f14;
+    --k-panel: #141a1fcc;
+    --k-line: #ffffff14;
+    --k-text: #e6ecea;
+    --k-muted: #aeb7b5;
+    --k-mint: #10e0a7;
+    --k-mint-soft: #7ff0cc;
+    --k-green: #10a37f;
+    --k-violet: #7c5cff;
+    --k-grad: linear-gradient(90deg, #10e0a7, #7c5cff);
+    --k-border: linear-gradient(135deg, #10a37f88, #ffffff14 40%, #7c5cff77);
+    --bs-body-bg: var(--k-bg);
+    --bs-body-color: var(--k-text);
+    --bs-secondary-color: var(--k-muted);
+    --bs-border-color: var(--k-line);
+    --bs-link-color-rgb: 127, 240, 204;
+    --bs-link-hover-color-rgb: 157, 140, 255;
+}
+
+html { font-size: 14px; }
+body {
+    min-height: 100vh;
+    color: var(--k-text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background:
+        radial-gradient(900px 600px at 8% 0%, #0f5a4666 0%, transparent 70%),
+        radial-gradient(800px 700px at 100% 100%, #3b2a7a55 0%, transparent 70%),
+        linear-gradient(160deg, #0d1614 0%, #0e0f14 60%, #120f1c 100%) fixed;
+}
+.text-muted { color: var(--k-muted) !important; }
+
+/* Top bar: glass with a gradient line underneath. */
+.navbar { background: #0b0f12cc !important; backdrop-filter: blur(10px); border-bottom: 1px solid transparent; border-image: var(--k-grad) 1; }
+.navbar-brand { font-weight: 700; background: linear-gradient(90deg, #fff, #c9fbe9 45%, #9d8cff); -webkit-background-clip: text; background-clip: text; color: transparent !important; }
+.navbar .nav-link { color: var(--k-muted); border-radius: 999px; padding: 6px 14px !important; transition: all .2s; }
+.navbar .nav-link:hover { color: var(--k-mint-soft); background: #10a37f1f; }
+
+/* Panels: glass with a gradient border. */
+.card, .table { --bs-card-bg: transparent; --bs-table-bg: transparent; }
+.card, .messages {
+    background: linear-gradient(var(--k-panel), var(--k-panel)) padding-box, var(--k-border) border-box;
+    border: 1.5px solid transparent; border-radius: 16px; box-shadow: 0 18px 40px #00000055;
+}
+.card-header { background: transparent; border-bottom: 1px solid var(--k-line); color: var(--k-mint-soft); }
+.list-group-item { background: var(--k-panel); border-color: var(--k-line); color: var(--k-text); }
+.list-group-item small { color: var(--k-muted); }
+.list-group-item.active { background: linear-gradient(90deg, #10a37f40, #7c5cff33); border-color: #10a37f88; color: #fff; }
+.list-group-item.active small { color: var(--k-mint-soft); }
+.table > :not(caption) > * > * { color: var(--k-text); border-color: var(--k-line); }
+.table thead th { color: var(--k-mint-soft); }
+
+/* Buttons and inputs. */
+.btn-primary { background: var(--k-grad); border: 0; color: #0b1311; font-weight: 600; box-shadow: 0 0 18px #10a37f44; }
+.btn-primary:hover, .btn-primary:focus { filter: brightness(1.12); color: #0b1311; background: var(--k-grad); }
+.btn-success { background: var(--k-green); border-color: var(--k-green); }
+.btn-outline-success { color: var(--k-mint-soft); border-color: #10a37f99; }
+.btn-outline-success:hover { background: #10a37f33; color: #fff; }
+.form-control, .form-select { background-color: #0b0f12; border-color: #ffffff22; color: var(--k-text); }
+.form-control:focus, .form-select:focus { background-color: #0b0f12; color: var(--k-text); border-color: var(--k-mint); box-shadow: 0 0 0 .2rem #10e0a733; }
+.badge.bg-secondary { background: #ffffff1a !important; color: var(--k-mint-soft); border: 1px solid #10a37f66; }
+.badge.bg-info { background: #7c5cff44 !important; color: #d6ccff; }
+code { color: var(--k-mint-soft); }
+pre { color: var(--k-muted); }
+
+.prio-low { background: #6c757d; }
+.prio-medium { background: var(--k-violet); }
+.prio-high { background: #fd7e14; }
+.prio-urgent { background: #dc3545; }
+
+/* Chat */
+.chat-layout { display: grid; grid-template-columns: 260px 1fr; gap: 16px; height: calc(100vh - 90px); }
+.chat-sidebar { overflow-y: auto; }
+.conversation { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-radius: 10px; margin-bottom: 4px; border: 1px solid transparent; }
+.conversation a { text-decoration: none; color: inherit; flex: 1; overflow: hidden; }
+.conversation.active, .conversation:hover { background: #10a37f1f; border-color: #10a37f55; }
+.chat-main { display: flex; flex-direction: column; min-height: 0; }
+.messages { flex: 1; overflow-y: auto; padding: 18px; }
+.msg { max-width: 80%; padding: 10px 14px; border-radius: 14px; margin-bottom: 12px; line-height: 1.5; }
+.msg p:last-child { margin-bottom: 0; }
+.msg.user { margin-left: auto; background: var(--k-grad); color: #0b1311; font-weight: 500; border-bottom-right-radius: 4px; }
+.msg.user a { color: #0b1311; text-decoration: underline; }
+.msg.assistant { background: #ffffff0d; border: 1px solid var(--k-line); border-bottom-left-radius: 4px; }
+.msg.tool { font-size: 12px; color: var(--k-mint-soft); padding: 3px 12px; background: #10a37f14; border: 1px dashed #10a37f55; display: inline-block; }
+.msg.error { background: #dc354526; border: 1px solid #dc354566; }
+.msg.approval { background: #7c5cff1f; border: 1px solid #7c5cff77; }
+.msg .thumb { display: block; max-width: 220px; margin-top: 6px; border-radius: 8px; }
+.chat-input { display: flex; gap: 8px; margin-top: 12px; }
+
+/* Workflows and investigations */
+.events { max-height: 60vh; overflow-y: auto; }
+.event { padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; background: #ffffff0a; border: 1px solid var(--k-line); }
+.event.step, .event.checkpoint, .event.status { font-size: 12px; color: var(--k-muted); padding: 4px 12px; }
+.event.agent { background: #ffffff0d; }
+.event.output { background: #10a37f1f; border-color: #10a37f77; }
+.event.request { background: #7c5cff1f; border-color: #7c5cff88; box-shadow: 0 0 22px #7c5cff22; }
+.event.error { background: #dc354526; border-color: #dc354566; }
+
+@media (max-width: 768px) {
+    .chat-layout { grid-template-columns: 1fr; height: auto; }
+    .chat-sidebar { max-height: 160px; }
+}

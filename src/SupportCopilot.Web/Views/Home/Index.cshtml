@@ -1,0 +1,37 @@
+@model DashboardModel
+@{ ViewData["Title"] = "Dashboard"; }
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header fw-semibold">Support tickets</div>
+            <table class="table table-sm mb-0">
+                <thead><tr><th>#</th><th>Title</th><th>Category</th><th>Priority</th><th>Status</th><th>Customer</th></tr></thead>
+                <tbody>
+                @foreach (var t in Model.Tickets)
+                {
+                    <tr>
+                        <td>@t.Id</td><td>@t.Title</td><td>@t.Category</td>
+                        <td><span class="badge prio-@t.Priority.ToLowerInvariant()">@t.Priority</span></td>
+                        <td>@t.Status</td><td>@t.CustomerEmail</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header fw-semibold">Orders</div>
+            <table class="table table-sm mb-0">
+                <thead><tr><th>#</th><th>Product</th><th>Amount</th><th>Status</th><th>Customer</th></tr></thead>
+                <tbody>
+                @foreach (var o in Model.Orders)
+                {
+                    <tr><td>@o.Id</td><td>@o.Product</td><td>@o.Amount.ToString("C")</td><td>@o.Status</td><td>@o.Customer?.Email</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
