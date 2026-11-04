@@ -1,4 +1,3 @@
-8. Agents in DI, with resilience
 # Kodify Agent Framework
 
 A production-grade AI Support Copilot, built step by step in the Kodify Dev YouTube course
@@ -20,3 +19,5 @@ A production-grade AI Support Copilot, built step by step in the Kodify Dev YouT
 4. Streaming, sessions and structured output
 5. Models and cost
 6. Testing from day one
+7. Clean solution, EF Core and Aspire
+8. Agents in DI, with resilience
