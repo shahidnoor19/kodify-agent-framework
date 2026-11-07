@@ -1,0 +1,32 @@
+@model ChatPageModel
+@{ ViewData["Title"] = "Chat"; }
+
+<div class="chat-layout">
+    <aside class="chat-sidebar">
+        <a class="btn btn-primary w-100 mb-3" asp-action="Index">+ New chat</a>
+    </aside>
+
+    <section class="chat-main">
+        <div class="d-flex gap-2 mb-2 align-items-center">
+            <label class="text-muted small">Agent</label>
+            <select id="agent" class="form-select form-select-sm w-auto">
+                @foreach (var a in Model.Agents)
+                {
+                    <option value="@a.Key" selected="@(a.Key == "support")">@a.Title · @a.Model</option>
+                }
+            </select>
+        </div>
+
+        <div id="messages" class="messages"></div>
+
+        <form id="chat-form" class="chat-input">
+            <input id="message" class="form-control" placeholder="Ask the agent..." autocomplete="off" />
+            <button class="btn btn-primary">Send</button>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/sse.js" asp-append-version="true"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+}
