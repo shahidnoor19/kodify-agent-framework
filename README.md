@@ -22,3 +22,4 @@ A production-grade AI Support Copilot, built step by step in the Kodify Dev YouT
 7. Clean solution, EF Core and Aspire
 8. Agents in DI, with resilience
 9. Chat UI with streaming (SSE)
+10. Conversations that survive a restart

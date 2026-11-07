@@ -3,6 +3,7 @@ using Microsoft.Agents.AI.Hosting;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SupportCopilot.Agents.Conversations;
 using SupportCopilot.Infrastructure.Foundry;
 
 namespace SupportCopilot.Agents;
@@ -21,8 +22,20 @@ public static class AgentRegistration
 
     public static IHostApplicationBuilder AddSupportAgents(this IHostApplicationBuilder builder)
     {
-        builder.AddAIAgent("support", (sp, key) => Traced(sp, Client(sp).AsAIAgent(name: key, instructions: Instructions.Support)));
+        builder.AddAIAgent("support", (sp, key) => Traced(sp, Client(sp).AsAIAgent(new ChatClientAgentOptions
+        {
+            Name = key,
+            Description = "Kodify Store customer support agent",
+            ChatOptions = new ChatOptions { Instructions = Instructions.Support },
+            // Keep the last 30 messages: a long chat does not grow the context window, and the cost, forever.
+            ChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
+            {
+                ChatReducer = new MessageCountingChatReducer(30),
+            }),
+        })));
         builder.AddAIAgent("triage", (sp, key) => Traced(sp, Client(sp).AsAIAgent(name: key, instructions: Instructions.Triage)));
+        // The conversation store reads and writes the database, so it lives per request (scoped).
+        builder.Services.AddScoped<ConversationStore>();
         return builder;
     }
 

@@ -4,20 +4,32 @@
 <div class="chat-layout">
     <aside class="chat-sidebar">
         <a class="btn btn-primary w-100 mb-3" asp-action="Index">+ New chat</a>
+        @foreach (var c in Model.Conversations)
+        {
+            <div class="conversation @(c.Id == Model.Current?.Id ? "active" : "")">
+                <a asp-action="Index" asp-route-id="@c.Id">@c.Title<small class="d-block text-muted">@c.AgentName</small></a>
+                <form asp-action="Delete" asp-route-id="@c.Id" method="post"><button class="btn btn-sm btn-link text-danger">✕</button></form>
+            </div>
+        }
     </aside>
 
     <section class="chat-main">
         <div class="d-flex gap-2 mb-2 align-items-center">
             <label class="text-muted small">Agent</label>
-            <select id="agent" class="form-select form-select-sm w-auto">
+            <select id="agent" class="form-select form-select-sm w-auto" @(Model.Current is null ? "" : "disabled")>
                 @foreach (var a in Model.Agents)
                 {
-                    <option value="@a.Key" selected="@(a.Key == "support")">@a.Title · @a.Model</option>
+                    <option value="@a.Key" selected="@(a.Key == (Model.Current?.AgentName ?? "support"))">@a.Title · @a.Model</option>
                 }
             </select>
         </div>
 
-        <div id="messages" class="messages"></div>
+        <div id="messages" class="messages">
+            @foreach (var line in Model.History)
+            {
+                <div class="msg @line.Role" data-markdown="@line.Text"></div>
+            }
+        </div>
 
         <form id="chat-form" class="chat-input">
             <input id="message" class="form-control" placeholder="Ask the agent..." autocomplete="off" />
@@ -28,5 +40,6 @@
 
 @section Scripts {
     <script src="~/js/sse.js" asp-append-version="true"></script>
+    <script>window.conversationId = @Json.Serialize(Model.Current?.Id);</script>
     <script src="~/js/chat.js" asp-append-version="true"></script>
 }

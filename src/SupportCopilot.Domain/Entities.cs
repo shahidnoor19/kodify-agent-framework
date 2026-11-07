@@ -42,3 +42,14 @@ public sealed class Ticket
     public string CreatedBy { get; set; } = "";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
+/// <summary>A chat conversation. The agent session is stored as JSON so the chat survives a restart.</summary>
+public sealed class Conversation
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("n");
+    public string UserName { get; set; } = "";
+    public string AgentName { get; set; } = "";
+    public string Title { get; set; } = "New chat";
+    public string SessionJson { get; set; } = "";
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+}

@@ -3,6 +3,10 @@ const messages = document.getElementById('messages');
 const form = document.getElementById('chat-form');
 const input = document.getElementById('message');
 const agentSelect = document.getElementById('agent');
+let conversationId = window.conversationId;
+
+document.querySelectorAll('[data-markdown]').forEach(el => el.innerHTML = renderMarkdown(el.dataset.markdown));
+messages.scrollTop = messages.scrollHeight;
 
 function addMessage(role, html) {
     const div = document.createElement('div');
@@ -19,6 +23,9 @@ async function stream(url, body) {
     let bubble = null;
     await postSse(url, body, (event, data) => {
         switch (event) {
+            case 'conversation':
+                conversationId = data.id;
+                break;
             case 'delta':
                 bubble ??= addMessage('assistant', '');
                 text += data.text;
@@ -27,6 +34,10 @@ async function stream(url, body) {
                 break;
             case 'error':
                 addMessage('error', `⚠️ ${data.message}`);
+                break;
+            case 'done':
+                agentSelect.disabled = true;
+                history.replaceState(null, '', `/Chat?id=${data.id}`);
                 break;
         }
     });
@@ -38,5 +49,5 @@ form.addEventListener('submit', async e => {
     if (!text) return;
     input.value = '';
     addMessage('user', renderMarkdown(text));
-    await stream('/Chat/Stream', { agent: agentSelect.value, message: text });
+    await stream('/Chat/Stream', { conversationId, agent: agentSelect.value, message: text });
 });
