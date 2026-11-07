@@ -25,3 +25,4 @@ A production-grade AI Support Copilot, built step by step in the Kodify Dev YouT
 10. Conversations that survive a restart
 11. Tools as adapters over application services
 12. Identity and data scoping
+13. Human approval, durable and role-checked

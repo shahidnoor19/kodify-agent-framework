@@ -31,8 +31,8 @@ public static class AgentRegistration
             ChatOptions = new ChatOptions
             {
                 Instructions = Instructions.Support,
-                // The tools the model may call. Read tools run freely; video 13 adds refund and cancel, behind human approval.
-                Tools = [.. sp.GetRequiredService<OrderTools>().ReadTools(), .. sp.GetRequiredService<TicketTools>().AllTools()],
+                // The tools the model may call. Read tools run freely; refund and cancel wait for a human to approve.
+                Tools = [.. sp.GetRequiredService<OrderTools>().AllTools(), .. sp.GetRequiredService<TicketTools>().AllTools()],
             },
             // Tells the agent who it talks to, before every run.
             AIContextProviders = [sp.GetRequiredService<UserMemoryProvider>()],
@@ -45,6 +45,7 @@ public static class AgentRegistration
         builder.AddAIAgent("triage", (sp, key) => Traced(sp, Client(sp).AsAIAgent(name: key, instructions: Instructions.Triage)));
         // The conversation store reads and writes the database, so it lives per request (scoped).
         builder.Services.AddScoped<ConversationStore>();
+        builder.Services.AddScoped<ApprovalStore>();
         // Tools are singletons, like the agents; every call opens its own scope through ToolScope.
         builder.Services.AddSingleton<ToolScope>();
         builder.Services.AddSingleton<OrderTools>();

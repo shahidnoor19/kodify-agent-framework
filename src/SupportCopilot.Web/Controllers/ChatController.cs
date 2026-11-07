@@ -11,6 +11,7 @@ using SupportCopilot.Web.Infrastructure;
 namespace SupportCopilot.Web.Controllers;
 
 public sealed record ChatRequest(string? ConversationId, string Agent, string Message);
+public sealed record ApprovalAnswer(string ConversationId, string RequestId, bool Approved, bool Always = false);
 
 public sealed class ChatPageModel
 {
@@ -22,7 +23,7 @@ public sealed class ChatPageModel
 
 /// <summary>Interactive chat: short turns stream inside the request (SSE).</summary>
 [Authorize]
-public sealed class ChatController(IServiceProvider services, ConversationStore store, ILogger<ChatController> log) : Controller
+public sealed class ChatController(IServiceProvider services, ConversationStore store, ApprovalStore approvals, ILogger<ChatController> log) : Controller
 {
     private string UserName => User.Identity!.Name!;
 
@@ -47,6 +48,29 @@ public sealed class ChatController(IServiceProvider services, ConversationStore 
         await StreamAsync(agent, conversation, session, new ChatMessage(ChatRole.User, request.Message), request.Message, ct);
     }
 
+    /// <summary>The conversation owner answers a tool approval; supervisor-only tools need a supervisor.</summary>
+    [HttpPost, EnableRateLimiting("agent")]
+    public async Task Approve([FromBody] ApprovalAnswer answer, CancellationToken ct)
+    {
+        var caller = HttpContext.RequestServices.GetRequiredService<Application.Security.ICallerContextAccessor>().Current;
+        var (pending, request, error) = await approvals.TakeAsync(answer.RequestId, caller, ct);
+        if (error is not null)
+        {
+            Sse.Start(Response);
+            await Sse.SendAsync(Response, "error", new { message = error }, ct);
+            await Sse.SendAsync(Response, "done", new { id = answer.ConversationId }, ct);
+            return;
+        }
+
+        var agent = Agent(pending!.AgentName);
+        var (conversation, session) = await store.OpenAsync(pending.ConversationId, UserName, pending.AgentName, agent, ct);
+        // "Always approve" adds a standing rule, so the same tool stops asking in this conversation.
+        AIContent response = answer.Approved && answer.Always
+            ? request!.CreateAlwaysApproveToolResponse("Approved for this conversation.")
+            : request!.CreateResponse(answer.Approved, answer.Approved ? null : "The reviewer rejected this action.");
+        await StreamAsync(agent, conversation, session, new ChatMessage(ChatRole.User, [response]), "", ct);
+    }
+
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string id)
     {
@@ -58,6 +82,7 @@ public sealed class ChatController(IServiceProvider services, ConversationStore 
     {
         Sse.Start(Response);
         await Sse.SendAsync(Response, "conversation", new { id = conversation.Id }, ct);
+        var approvalsToSave = new List<ToolApprovalRequestContent>();
         try
         {
             await foreach (var update in agent.RunStreamingAsync(message, session, cancellationToken: ct))
@@ -66,6 +91,10 @@ public sealed class ChatController(IServiceProvider services, ConversationStore 
                 {
                     switch (content)
                     {
+                        case ToolApprovalRequestContent approval when approval.ToolCall is FunctionCallContent call:
+                            approvalsToSave.Add(approval);
+                            await Sse.SendAsync(Response, "approval", new { requestId = approval.RequestId, tool = call.Name, arguments = call.Arguments }, ct);
+                            break;
                         case FunctionCallContent call:
                             await Sse.SendAsync(Response, "tool", new { name = call.Name }, ct);
                             break;
@@ -75,8 +104,10 @@ public sealed class ChatController(IServiceProvider services, ConversationStore 
                     }
                 }
             }
-            // Save the session after the answer, so the next message continues this conversation.
+            // Save the conversation first, then the approvals that point to it.
             await store.SaveAsync(conversation, agent, session, text, ct);
+            foreach (var approval in approvalsToSave)
+                await approvals.SaveAsync(conversation.Id, UserName, conversation.AgentName, approval, ct);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {

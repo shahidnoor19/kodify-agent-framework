@@ -10,6 +10,7 @@ public interface IApplicationDbContext
     DbSet<Order> Orders { get; }
     DbSet<Ticket> Tickets { get; }
     DbSet<Conversation> Conversations { get; }
+    DbSet<PendingApproval> PendingApprovals { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

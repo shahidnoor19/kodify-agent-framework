@@ -35,6 +35,9 @@ async function stream(url, body) {
                 bubble.innerHTML = renderMarkdown(text);
                 messages.scrollTop = messages.scrollHeight;
                 break;
+            case 'approval':
+                showApproval(data);
+                break;
             case 'error':
                 addMessage('error', `⚠️ ${data.message}`);
                 break;
@@ -44,6 +47,23 @@ async function stream(url, body) {
                 break;
         }
     });
+}
+
+// A human approves or rejects a tool call before it runs.
+function showApproval({ requestId, tool, arguments: args }) {
+    const card = addMessage('approval', `
+        <div class="fw-semibold">Approval needed: <code>${tool}</code></div>
+        <pre class="mb-2">${JSON.stringify(args, null, 2)}</pre>
+        <button class="btn btn-sm btn-success me-2" data-ok="true">Approve</button>
+        <button class="btn btn-sm btn-outline-success me-2" data-ok="true" data-always="true">Approve always</button>
+        <button class="btn btn-sm btn-outline-danger" data-ok="false">Reject</button>`);
+    card.querySelectorAll('button').forEach(button => button.addEventListener('click', async () => {
+        card.querySelectorAll('button').forEach(b => b.disabled = true);
+        const approved = button.dataset.ok === 'true';
+        const always = button.dataset.always === 'true';
+        card.insertAdjacentHTML('beforeend', `<div class="mt-1">${approved ? (always ? '✅ Approved for this session' : '✅ Approved') : '❌ Rejected'}</div>`);
+        await stream('/Chat/Approve', { conversationId, requestId, approved, always });
+    }));
 }
 
 form.addEventListener('submit', async e => {

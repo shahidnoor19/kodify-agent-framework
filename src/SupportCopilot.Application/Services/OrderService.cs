@@ -41,6 +41,34 @@ public sealed class OrderService(IApplicationDbContext db, ICallerContextAccesso
         return (await query.OrderByDescending(o => o.OrderedAt).ToListAsync(ct)).Select(ToDto).ToList();
     }
 
+    public async Task<string> RefundAsync(int orderId, string reason, CancellationToken ct = default)
+    {
+        if (!Caller.IsSupervisor) throw new AccessDeniedException("Only a supervisor can refund an order.");
+
+        var order = await db.Orders.FindAsync([orderId], ct);
+        if (order is null) return $"Order {orderId} was not found.";
+        if (order.Status == OrderStatus.Refunded) return $"Order {orderId} is already refunded.";
+
+        order.Status = OrderStatus.Refunded;
+        await db.SaveChangesAsync(ct);
+        return $"Order {orderId} refunded ({order.Amount:C}). Reason: {reason}";
+    }
+
+    public async Task<string> CancelAsync(int orderId, CancellationToken ct = default)
+    {
+        var order = await db.Orders.Include(o => o.Customer).FirstOrDefaultAsync(o => o.Id == orderId, ct);
+        if (order is null) return $"Order {orderId} was not found.";
+
+        // A supervisor can cancel any order; a customer only their own.
+        var ownOrder = Caller.IsCustomer && Caller.CanReadCustomer(order.Customer!.Email);
+        if (!Caller.IsSupervisor && !ownOrder) throw new AccessDeniedException("Only a supervisor or the customer can cancel this order.");
+        if (order.Status != OrderStatus.Processing) return $"Order {orderId} is {order.Status} and can no longer be cancelled.";
+
+        order.Status = OrderStatus.Cancelled;
+        await db.SaveChangesAsync(ct);
+        return $"Order {orderId} cancelled.";
+    }
+
     private void EnsureCanRead(string customerEmail)
     {
         if (!Caller.CanReadCustomer(customerEmail))

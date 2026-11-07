@@ -53,3 +53,16 @@ public sealed class Conversation
     public string SessionJson { get; set; } = "";
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
+
+/// <summary>A tool call waiting for a human. Stored so it survives restarts and so we know who may approve it.</summary>
+public sealed class PendingApproval
+{
+    public string RequestId { get; set; } = "";
+    public string ConversationId { get; set; } = "";
+    public string UserName { get; set; } = "";
+    public string AgentName { get; set; } = "";
+    public string ToolName { get; set; } = "";
+    public string ArgumentsJson { get; set; } = "";
+    public string RequestJson { get; set; } = "";
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
