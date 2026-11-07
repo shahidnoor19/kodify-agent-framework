@@ -4,6 +4,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SupportCopilot.Agents.Conversations;
+using SupportCopilot.Agents.Memory;
 using SupportCopilot.Agents.Tools;
 using SupportCopilot.Infrastructure.Foundry;
 
@@ -33,6 +34,8 @@ public static class AgentRegistration
                 // The tools the model may call. Read tools run freely; video 13 adds refund and cancel, behind human approval.
                 Tools = [.. sp.GetRequiredService<OrderTools>().ReadTools(), .. sp.GetRequiredService<TicketTools>().AllTools()],
             },
+            // Tells the agent who it talks to, before every run.
+            AIContextProviders = [sp.GetRequiredService<UserMemoryProvider>()],
             // Keep the last 30 messages: a long chat does not grow the context window, and the cost, forever.
             ChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
             {
@@ -46,6 +49,7 @@ public static class AgentRegistration
         builder.Services.AddSingleton<ToolScope>();
         builder.Services.AddSingleton<OrderTools>();
         builder.Services.AddSingleton<TicketTools>();
+        builder.Services.AddSingleton<UserMemoryProvider>();
         return builder;
     }
 

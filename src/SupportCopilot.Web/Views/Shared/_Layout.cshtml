@@ -14,6 +14,11 @@
             <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" asp-controller="Chat" asp-action="Index">Chat</a></li>
         </ul>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <span class="navbar-text me-3">@User.Identity.Name · @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</span>
+            <form asp-controller="Account" asp-action="Logout" method="post"><button class="btn btn-sm btn-outline-light">Sign out</button></form>
+        }
     </nav>
     <main class="container-fluid py-3">
         @RenderBody()

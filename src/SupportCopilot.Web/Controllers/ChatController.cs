@@ -1,4 +1,5 @@
 using Microsoft.Agents.AI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.AI;
@@ -20,10 +21,10 @@ public sealed class ChatPageModel
 }
 
 /// <summary>Interactive chat: short turns stream inside the request (SSE).</summary>
+[Authorize]
 public sealed class ChatController(IServiceProvider services, ConversationStore store, ILogger<ChatController> log) : Controller
 {
-    // One demo user until sign-in arrives in video 12: then this becomes the signed-in user.
-    private const string UserName = "demo";
+    private string UserName => User.Identity!.Name!;
 
     private static readonly List<AgentInfo> ChatAgents = AgentRegistration.Catalog.Where(a => !a.RunsAsJob).ToList();
 

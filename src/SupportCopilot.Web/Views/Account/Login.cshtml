@@ -1,0 +1,17 @@
+@model string?
+@{ ViewData["Title"] = "Sign in"; }
+
+<div class="card mx-auto mt-5" style="max-width: 380px">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Sign in (demo users)</h5>
+        <form method="post">
+            <input type="hidden" name="returnUrl" value="@Model" />
+            <select name="userName" class="form-select mb-3">
+                <option value="alice">alice · Agent</option>
+                <option value="sam">sam · Supervisor (can approve refunds)</option>
+                <option value="ayesha">ayesha · Customer (sees only her own orders)</option>
+            </select>
+            <button class="btn btn-primary w-100">Sign in</button>
+        </form>
+    </div>
+</div>
