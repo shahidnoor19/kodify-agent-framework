@@ -4,6 +4,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SupportCopilot.Agents.Conversations;
+using SupportCopilot.Agents.Middleware;
 using SupportCopilot.Agents.Memory;
 using SupportCopilot.Agents.Tools;
 using SupportCopilot.Infrastructure.Foundry;
@@ -24,7 +25,7 @@ public static class AgentRegistration
 
     public static IHostApplicationBuilder AddSupportAgents(this IHostApplicationBuilder builder)
     {
-        builder.AddAIAgent("support", (sp, key) => Traced(sp, Client(sp).AsAIAgent(new ChatClientAgentOptions
+        builder.AddAIAgent("support", (sp, key) => Guarded(sp, ModelTier.Fast, Client(sp).AsAIAgent(new ChatClientAgentOptions
         {
             Name = key,
             Description = "Kodify Store customer support agent",
@@ -42,7 +43,7 @@ public static class AgentRegistration
                 ChatReducer = new MessageCountingChatReducer(30),
             }),
         })));
-        builder.AddAIAgent("triage", (sp, key) => Traced(sp, Client(sp).AsAIAgent(name: key, instructions: Instructions.Triage)));
+        builder.AddAIAgent("triage", (sp, key) => Guarded(sp, ModelTier.Fast, Client(sp).AsAIAgent(name: key, instructions: Instructions.Triage)));
         // The conversation store reads and writes the database, so it lives per request (scoped).
         builder.Services.AddScoped<ConversationStore>();
         builder.Services.AddScoped<ApprovalStore>();
@@ -51,13 +52,16 @@ public static class AgentRegistration
         builder.Services.AddSingleton<OrderTools>();
         builder.Services.AddSingleton<TicketTools>();
         builder.Services.AddSingleton<UserMemoryProvider>();
+        // The guardrails around every agent: PII redaction, tool logging, token usage and the OpenTelemetry span.
+        builder.Services.AddSingleton<PiiRedactor>();
+        builder.Services.AddSingleton<AgentGuardrails>();
         return builder;
     }
 
     private static IChatClient Client(IServiceProvider sp, ModelTier tier = ModelTier.Fast) =>
         sp.GetRequiredService<FoundryClients>().ChatClient(tier);
 
-    // Every agent run becomes a span in the Aspire dashboard. ServiceDefaults listens to the "SupportCopilot" source.
-    private static AIAgent Traced(IServiceProvider sp, AIAgent agent) =>
-        agent.AsBuilder().UseOpenTelemetry(sourceName: "SupportCopilot").Build(sp);
+    // Every agent goes through the same guardrails; the model name of its tier is recorded with the usage.
+    private static AIAgent Guarded(IServiceProvider sp, ModelTier tier, AIAgent agent) =>
+        sp.GetRequiredService<AgentGuardrails>().Apply(agent, sp, sp.GetRequiredService<FoundryClients>().Model(tier));
 }

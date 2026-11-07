@@ -66,3 +66,15 @@ public sealed class PendingApproval
     public string RequestJson { get; set; } = "";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
+/// <summary>Tokens used by one agent run, for cost tracking.</summary>
+public sealed class UsageRecord
+{
+    public int Id { get; set; }
+    public string UserName { get; set; } = "";
+    public string AgentName { get; set; } = "";
+    public string Model { get; set; } = "";
+    public long InputTokens { get; set; }
+    public long OutputTokens { get; set; }
+    public DateTime At { get; set; } = DateTime.UtcNow;
+}

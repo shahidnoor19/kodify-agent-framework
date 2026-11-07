@@ -34,4 +34,21 @@
             </table>
         </div>
     </div>
+    @if (Model.Usage.Count > 0)
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header fw-semibold">Token usage per agent (supervisors only)</div>
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Agent</th><th>Model</th><th>Runs</th><th>Input tokens</th><th>Output tokens</th></tr></thead>
+                    <tbody>
+                    @foreach (var u in Model.Usage)
+                    {
+                        <tr><td>@u.AgentName</td><td>@u.Model</td><td>@u.Runs</td><td>@u.InputTokens.ToString("N0")</td><td>@u.OutputTokens.ToString("N0")</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>

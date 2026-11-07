@@ -11,6 +11,7 @@ public interface IApplicationDbContext
     DbSet<Ticket> Tickets { get; }
     DbSet<Conversation> Conversations { get; }
     DbSet<PendingApproval> PendingApprovals { get; }
+    DbSet<UsageRecord> UsageRecords { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

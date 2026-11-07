@@ -11,6 +11,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<Conversation> Conversations => Set<Conversation>();
     public DbSet<PendingApproval> PendingApprovals => Set<PendingApproval>();
+    public DbSet<UsageRecord> UsageRecords => Set<UsageRecord>();
 
     protected override void OnModelCreating(ModelBuilder model)
     {

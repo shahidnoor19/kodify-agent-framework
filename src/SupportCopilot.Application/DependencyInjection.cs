@@ -12,6 +12,7 @@ public static class DependencyInjection
         services.AddSingleton<ICallerContextAccessor, CallerContextAccessor>();
         services.AddScoped<OrderService>();
         services.AddScoped<TicketService>();
+        services.AddScoped<UsageService>();
         return services;
     }
 }
