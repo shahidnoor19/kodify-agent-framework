@@ -65,6 +65,9 @@ public sealed class ChatController(IServiceProvider services, ConversationStore 
                 {
                     switch (content)
                     {
+                        case FunctionCallContent call:
+                            await Sse.SendAsync(Response, "tool", new { name = call.Name }, ct);
+                            break;
                         case TextContent { Text.Length: > 0 } delta:
                             await Sse.SendAsync(Response, "delta", new { text = delta.Text }, ct);
                             break;

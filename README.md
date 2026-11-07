@@ -23,3 +23,4 @@ A production-grade AI Support Copilot, built step by step in the Kodify Dev YouT
 8. Agents in DI, with resilience
 9. Chat UI with streaming (SSE)
 10. Conversations that survive a restart
+11. Tools as adapters over application services

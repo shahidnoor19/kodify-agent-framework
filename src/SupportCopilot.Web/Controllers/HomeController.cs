@@ -1,19 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SupportCopilot.Application;
-using SupportCopilot.Domain;
+using SupportCopilot.Application.Services;
 
 namespace SupportCopilot.Web.Controllers;
 
-public sealed record DashboardModel(List<Ticket> Tickets, List<Order> Orders);
+public sealed record DashboardModel(List<TicketDto> Tickets, List<OrderDto> Orders);
 
-/// <summary>Dashboard. Teaching version: it reads the DbContext interface directly; episode 11 moves this into services.</summary>
-public sealed class HomeController(IApplicationDbContext db) : Controller
+/// <summary>Dashboard. The same services as the agent tools, so the rules live in one place.</summary>
+public sealed class HomeController(TicketService tickets, OrderService orders) : Controller
 {
     public async Task<IActionResult> Index(CancellationToken ct) =>
         View(new DashboardModel(
-            await db.Tickets.OrderByDescending(t => t.CreatedAt).ToListAsync(ct),
-            await db.Orders.Include(o => o.Customer).OrderBy(o => o.Id).ToListAsync(ct)));
+            await tickets.ListRecentAsync(ct),
+            await orders.ListVisibleAsync(ct)));
 
     public IActionResult Error() => Problem();
 }

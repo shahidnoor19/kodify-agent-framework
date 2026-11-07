@@ -4,6 +4,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SupportCopilot.Agents.Conversations;
+using SupportCopilot.Agents.Tools;
 using SupportCopilot.Infrastructure.Foundry;
 
 namespace SupportCopilot.Agents;
@@ -26,7 +27,12 @@ public static class AgentRegistration
         {
             Name = key,
             Description = "Kodify Store customer support agent",
-            ChatOptions = new ChatOptions { Instructions = Instructions.Support },
+            ChatOptions = new ChatOptions
+            {
+                Instructions = Instructions.Support,
+                // The tools the model may call. Read tools run freely; video 13 adds refund and cancel, behind human approval.
+                Tools = [.. sp.GetRequiredService<OrderTools>().ReadTools(), .. sp.GetRequiredService<TicketTools>().AllTools()],
+            },
             // Keep the last 30 messages: a long chat does not grow the context window, and the cost, forever.
             ChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
             {
@@ -36,6 +42,10 @@ public static class AgentRegistration
         builder.AddAIAgent("triage", (sp, key) => Traced(sp, Client(sp).AsAIAgent(name: key, instructions: Instructions.Triage)));
         // The conversation store reads and writes the database, so it lives per request (scoped).
         builder.Services.AddScoped<ConversationStore>();
+        // Tools are singletons, like the agents; every call opens its own scope through ToolScope.
+        builder.Services.AddSingleton<ToolScope>();
+        builder.Services.AddSingleton<OrderTools>();
+        builder.Services.AddSingleton<TicketTools>();
         return builder;
     }
 

@@ -28,7 +28,7 @@
                 <tbody>
                 @foreach (var o in Model.Orders)
                 {
-                    <tr><td>@o.Id</td><td>@o.Product</td><td>@o.Amount.ToString("C")</td><td>@o.Status</td><td>@o.Customer?.Email</td></tr>
+                    <tr><td>@o.Id</td><td>@o.Product</td><td>@o.Amount.ToString("C")</td><td>@o.Status</td><td>@o.CustomerEmail</td></tr>
                 }
                 </tbody>
             </table>

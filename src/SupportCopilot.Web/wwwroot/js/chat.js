@@ -26,6 +26,9 @@ async function stream(url, body) {
             case 'conversation':
                 conversationId = data.id;
                 break;
+            case 'tool':
+                addMessage('tool', `🔧 calling <code>${data.name}</code>`);
+                break;
             case 'delta':
                 bubble ??= addMessage('assistant', '');
                 text += data.text;
